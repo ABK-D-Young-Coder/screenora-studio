@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Screenora Studio is a lightweight browser studio for recording your screen, webcam, microphone, and supported system audio." />
+  <meta name="theme-color" content="#121212" />
+  <title>Screenora Studio — Record. Explain. Share.</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23121212'/%3E%3Ccircle cx='32' cy='32' r='15' fill='%23ff5a52'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"><span></span></span>
+      <div>
+        <div class="brand-name">Screenora Studio</div>
+        <div class="brand-tagline">Record. Explain. Share.</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <span id="supportBadge" class="status-chip">Checking browser…</span>
+      <button id="settingsBtn" class="icon-btn" type="button" aria-label="Open settings">⚙</button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="hero-row">
+      <div>
+        <p class="eyebrow">BROWSER RECORDING STUDIO</p>
+        <h1>Capture your screen and camera in one take.</h1>
+        <p class="hero-copy">A privacy-first recorder for tutorials, software demos, lessons, presentations, and creator videos. No account or upload server required.</p>
+      </div>
+      <div class="quick-card">
+        <div class="quick-label">Current format</div>
+        <div id="formatLabel" class="quick-value">WebM</div>
+        <div class="quick-note">Best for browser recording. Convert to MP4 before upload when a platform requires MP4.</div>
+      </div>
+    </section>
+
+    <section class="studio-grid">
+      <div class="preview-panel panel">
+        <div class="panel-header">
+          <div>
+            <h2>Preview</h2>
+            <p id="previewHint">Choose your sources, then start recording.</p>
+          </div>
+          <div class="record-state idle" id="recordState"><span></span>Ready</div>
+        </div>
+        <div class="preview-stage" id="previewStage">
+          <canvas id="compositeCanvas" aria-label="Recording preview"></canvas>
+          <video id="screenVideo" autoplay muted playsinline hidden></video>
+          <video id="cameraVideo" autoplay muted playsinline hidden></video>
+          <div class="empty-preview" id="emptyPreview">
+            <div class="empty-icon">▣</div>
+            <div class="empty-title">Your recording will appear here</div>
+            <div class="empty-copy">Screenora composes the selected screen and webcam into a single local video.</div>
+          </div>
+          <div class="countdown" id="countdown" hidden>3</div>
+          <div class="timer" id="timer" hidden>00:00</div>
+          <div class="camera-bubble" id="cameraBubble" hidden>
+            <video id="cameraPreview" autoplay muted playsinline></video>
+          </div>
+        </div>
+        <div class="controls-row">
+          <button class="primary-btn" id="startBtn" type="button">● Start recording</button>
+          <button class="secondary-btn" id="pauseBtn" type="button" disabled>Pause</button>
+          <button class="secondary-btn danger-outline" id="stopBtn" type="button" disabled>Stop</button>
+        </div>
+      </div>
+
+      <aside class="controls-panel">
+        <div class="panel control-card">
+          <div class="panel-header compact"><div><h2>Sources</h2><p>Pick what gets captured.</p></div></div>
+          <label class="toggle-row">
+            <span><strong>Screen</strong><small>Window, tab, or entire screen</small></span>
+            <input id="screenToggle" type="checkbox" checked />
+            <span class="toggle" aria-hidden="true"></span>
+          </label>
+          <label class="toggle-row">
+            <span><strong>Camera</strong><small>Webcam overlay</small></span>
+            <input id="cameraToggle" type="checkbox" checked />
+            <span class="toggle" aria-hidden="true"></span>
+          </label>
+          <label class="toggle-row">
+            <span><strong>Microphone</strong><small>Voice narration</small></span>
+            <input id="micToggle" type="checkbox" checked />
+            <span class="toggle" aria-hidden="true"></span>
+          </label>
+          <label class="toggle-row">
+            <span><strong>System audio</strong><small>Available on supported browsers/selections</small></span>
+            <input id="systemAudioToggle" type="checkbox" />
+            <span class="toggle" aria-hidden="true"></span>
+          </label>
+        </div>
+
+        <div class="panel control-card">
+          <div class="panel-header compact"><div><h2>Camera</h2><p>Adjust the webcam bubble.</p></div></div>
+          <label class="field-row"><span>Position</span><select id="cameraPosition"><option value="bottom-right">Bottom right</option><option value="bottom-left">Bottom left</option><option value="top-right">Top right</option><option value="top-left">Top left</option></select></label>
+          <label class="field-row"><span>Size</span><input id="cameraSize" type="range" min="18" max="34" value="25" /><output id="cameraSizeOut">25%</output></label>
+        </div>
+
+        <div class="panel control-card">
+          <div class="panel-header compact"><div><h2>Recording</h2><p>Small controls that matter.</p></div></div>
+          <label class="field-row"><span>Countdown</span><select id="countdownSelect"><option value="0">Off</option><option value="3" selected>3 seconds</option><option value="5">5 seconds</option><option value="10">10 seconds</option></select></label>
+          <label class="field-row"><span>Resolution</span><select id="resolutionSelect"><option value="auto" selected>Screen size</option><option value="1080">Up to 1080p</option><option value="720">Up to 720p</option></select></label>
+        </div>
+
+        <div class="support-note">
+          <strong>Privacy note</strong>
+          <span>Recording is processed in your browser. Nothing is uploaded by this app unless you choose to share a saved recording yourself.</span>
+        </div>
+      </aside>
+    </section>
+
+    <section class="recordings panel" id="recordingsPanel" hidden>
+      <div class="panel-header compact">
+        <div><h2>Latest recording</h2><p>Preview it, then save it to your computer.</p></div>
+        <span id="recordingSize" class="status-chip">—</span>
+      </div>
+      <video id="recordingPreview" class="saved-video" controls playsinline></video>
+      <div class="saved-actions">
+        <a id="downloadBtn" class="primary-btn link-btn" download="screenora-recording.webm" href="#">Download recording</a>
+        <button id="newRecordingBtn" class="secondary-btn" type="button">New recording</button>
+      </div>
+      <div id="recordingMessage" class="recording-message"></div>
+    </section>
+  </main>
+
+  <dialog id="settingsDialog" class="dialog">
+    <form method="dialog" class="dialog-card">
+      <div class="panel-header compact"><div><h2>Screenora settings</h2><p>Local-only controls for this build.</p></div><button class="icon-btn" value="close" aria-label="Close">×</button></div>
+      <div class="settings-list">
+        <div><strong>Browser access</strong><span>Screen capture requires permission and generally works only from HTTPS or localhost.</span></div>
+        <div><strong>Output</strong><span>This build records to WebM using your browser's supported MediaRecorder codec.</span></div>
+        <div><strong>Camera layout</strong><span>The webcam is composited into the final recording, not saved as a separate track.</span></div>
+      </div>
+      <button class="primary-btn" value="close" type="submit">Done</button>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
